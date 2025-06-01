@@ -2,29 +2,42 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Virtual Environment
 venv/
-env/
 ENV/
+env/
 
-# Distribution / packaging
-dist/
-build/
-*.egg-info/
-
-# IDE specific files
-.vscode/
+# IDE
 .idea/
+.vscode/
 *.swp
 *.swo
 
-# Environment variables
+# Project specific
+backtester_output_*/
 .env
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Local development settings
+# Logs
 *.log
-.DS_Store 
+
+# System Files
+.DS_Store
+Thumbs.db 

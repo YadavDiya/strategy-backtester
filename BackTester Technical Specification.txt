@@ -1,0 +1,129 @@
+STRATEGY BACKTESTER - TECHNICAL SPECIFICATION
+==========================================
+
+1. System Overview
+-----------------
+The Strategy Backtester is a Python-based system that allows users to test trading strategies using historical cryptocurrency data from Binance. The system simulates how trading strategies would have performed in the past.
+
+2. Component Architecture
+------------------------
+The system is divided into several key components:
+
+a) Data Fetcher (data_fetcher.py)
+--------------------------------
+- Purpose: Retrieves historical price data from Binance
+- Key Features:
+  * Uses Binance's REST API to fetch OHLCV (Open, High, Low, Close, Volume) data
+  * Converts raw data into pandas DataFrame format
+  * Handles data cleaning and timestamp conversion
+- Technical Details:
+  * Endpoint: https://api.binance.com/api/v3/klines
+  * Default settings: 1-minute candles, last 5000 candles
+  * Data format: OHLCV with proper datetime index
+
+b) Technical Indicators (indicators.py)
+-------------------------------------
+- Purpose: Calculates various technical indicators used in trading strategies
+- Implemented Indicators:
+  1. EMA (Exponential Moving Average)
+     * Formula: Current EMA = Price * (s/(1+d)) + Previous EMA * (1 - (s/(1+d)))
+     * Where: s = 2, d = Period - 1
+
+  2. MACD (Moving Average Convergence Divergence)
+     * MACD Line = Fast EMA - Slow EMA
+     * Signal Line = EMA of MACD Line
+     * Default periods: Fast=12, Slow=26, Signal=9
+
+  3. RSI (Relative Strength Index)
+     * Formula: RSI = 100 - (100 / (1 + RS))
+     * RS = Average Gain / Average Loss
+     * Default period: 14 days
+
+c) Trading Strategies (strategies.py)
+-----------------------------------
+- Purpose: Defines trading strategy logic and generates buy/sell signals
+- Base Strategy Interface:
+  * Abstract class defining common strategy interface
+  * Required method: generate_signals()
+
+- Implemented Strategies:
+  1. MACD Strategy
+     * Entry: MACD line crosses above its EMA
+     * Exit: MACD line crosses below its EMA
+
+  2. RSI-EMA Strategy
+     * Entry: RSI > 30 AND price > EMA(21)
+     * Exit: RSI > 70 OR price < EMA(21)
+
+d) Backtester Engine (backtester.py)
+-----------------------------------
+- Purpose: Simulates trading based on strategy signals
+- Key Components:
+  1. Trade Class
+     * Tracks individual trades
+     * Stores entry/exit points and calculates P&L
+
+  2. Backtester Class
+     * Processes strategy signals
+     * Manages trade execution
+     * Calculates performance metrics
+
+- Performance Metrics:
+  * Total number of trades
+  * Win rate (percentage)
+  * Total P&L (Profit/Loss)
+  * Average P&L per trade
+
+3. Data Flow
+------------
+1. Data Fetching:
+   Binance API → Data Fetcher → Pandas DataFrame
+
+2. Signal Generation:
+   Raw Data → Technical Indicators → Strategy Logic → Trading Signals
+
+3. Backtesting:
+   Trading Signals → Trade Execution → Performance Metrics
+
+4. Usage Instructions
+--------------------
+1. Install Dependencies:
+   pip install -r requirements.txt
+
+2. Run Backtester:
+   python main.py
+
+3. Output:
+   - Console: Real-time performance metrics
+   - File: trades_results.csv with detailed trade history
+
+5. Technical Requirements
+------------------------
+- Python 3.x
+- Key Dependencies:
+  * pandas: Data manipulation
+  * requests: API communication
+  * numpy: Numerical computations
+  * python-binance: Binance API wrapper
+
+6. Performance Considerations
+---------------------------
+- Data Storage: Uses pandas DataFrame for efficient data manipulation
+- Calculations: Vectorized operations using numpy for better performance
+- Memory Usage: Keeps only essential OHLCV data in memory
+
+7. Extensibility
+---------------
+The system is designed for easy extension:
+- New strategies can be added by inheriting from Strategy base class
+- Additional technical indicators can be added to indicators.py
+- Performance metrics can be extended in Backtester class
+
+8. Limitations
+-------------
+- Only supports spot market data from Binance
+- Fixed position size for all trades
+- No support for:
+  * Multiple simultaneous positions
+  * Position scaling
+  * Stop-loss/Take-profit orders 
